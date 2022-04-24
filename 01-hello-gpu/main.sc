@@ -43,10 +43,14 @@ run-stage;
 
 global pipeline : (Option GPUPipeline)
 
+@@ 'on bottle.configure
+fn (cfg)
+    cfg.window.title = S"hello triangle"
+
 @@ 'on bottle.load
 fn ()
     # TODO: maybe we'd prefer the shader type to be an enum?
-    pipeline = (GPUPipeline "Empty" (GPUShaderModule shader 'wgsl))
+    pipeline = (GPUPipeline S"Empty" (GPUShaderModule shader 'wgsl))
 
 @@ 'on bottle.draw
 fn (render-pass)
