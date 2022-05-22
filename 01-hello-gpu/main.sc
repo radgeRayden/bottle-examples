@@ -4,13 +4,13 @@ using import glm
 using import struct
 using import String
 
-import ..bottle
+import bottle
 using bottle.gpu.types
 
 let shader =
     """"struct VertexOutput {
-            [[location(0)]] vcolor: vec4<f32>;
-            [[builtin(position)]] position: vec4<f32>;
+            @location(0) vcolor: vec4<f32>,
+            @builtin(position) position: vec4<f32>,
         };
 
         var<private> vertices : array<vec3<f32>, 3u> = array<vec3<f32>, 3u>(
@@ -25,17 +25,17 @@ let shader =
             vec4<f32>(0.0, 0.0, 1.0, 1.0),
         );
 
-        [[stage(vertex)]]
-        fn vs_main([[builtin(vertex_index)]] vindex: u32) -> VertexOutput {
+        @stage(vertex)
+        fn vs_main(@builtin(vertex_index) vindex: u32) -> VertexOutput {
             var out: VertexOutput;
             out.position = vec4<f32>(vertices[vindex], 1.0);
             out.vcolor = colors[vindex];
             return out;
         }
 
-        [[stage(fragment)]]
-        fn fs_main([[location(0)]] vcolor: vec4<f32>) -> [[location(0)]] vec4<f32> {
-            return vcolor;
+        @stage(fragment)
+        fn fs_main(vertex: VertexOutput) -> @location(0) vec4<f32> {
+            return vertex.vcolor;
         }
 
 global pipeline : (Option GPUPipeline)
