@@ -3,10 +3,30 @@ using import format
 using import Option
 using import struct
 using import String
+using import Array
 
 struct VertexAttributes
     position : vec2
     color : vec4
+
+fn gen-vertices ()
+    local vertices =
+        arrayof vec2
+            vec2 0.0   0.5
+            vec2 -0.5 -0.5
+            vec2 0.5  -0.5
+    local colors =
+        arrayof vec4
+            vec4 1.0 0.0 0.0 1.0
+            vec4 0.0 1.0 0.0 1.0
+            vec4 0.0 0.0 1.0 1.0
+    local vertex-data : (Array VertexAttributes)
+    for i in (range 3)
+        'append vertex-data
+            VertexAttributes
+                position = (vertices @ i)
+                color = (colors @ i)
+    vertex-data
 
 import bottle
 import bottle.src.gpu.common
@@ -22,7 +42,7 @@ vvv bind shader
     format
         """"struct VertexAttributes \{
                 position: vec2<f32>,
-                //color: vec4<f32>,
+                color: vec4<f32>,
             };
 
             @group(0)
@@ -37,9 +57,9 @@ vvv bind shader
             @stage(vertex)
             fn vs_main(@builtin(vertex_index) vindex: u32) -> VertexOutput \{
                 var out: VertexOutput;
-                let attr = vertexData[0];
+                let attr = vertexData[vindex];
                 out.position = vec4<f32>(attr.position, 0.0, 1.0);
-                out.vcolor = vec4<f32>(1.0);
+                out.vcolor = attr.color;
                 return out;
             }
 
@@ -58,6 +78,8 @@ fn (cfg)
 global pipeline : (Option GPUPipeline)
 global bgroup0 : (Option GPUBindGroup)
 global bgroup1 : (Option GPUBindGroup)
+global vertices : (Array VertexAttributes)
+global vertex-buffer : (Option GPUBuffer)
 
 @@ 'on bottle.load
 fn ()
@@ -70,11 +92,25 @@ fn ()
             'get cache.bind-group-layouts S"StreamingMesh"
         else
             error "you made a typo you dofus"
+
+    vertices = (gen-vertices)
+    let bufsize =
+        *
+            sizeof ((typeof vertices) . ElementType)
+            countof vertices
+    let vbuffer = (GPUBuffer bufsize)
+    'write (view vbuffer) vertices
+
     bgroup0 =
         GPUBindGroup layout
-            dummies.buffer
+            GPUResourceBinding.Buffer
+                buffer = vbuffer.handle
+                offset = 0
+                size = bufsize
             dummies.sampler
             dummies.texture-view
+
+    vertex-buffer = vbuffer
 
     let layout =
         try
@@ -87,6 +123,7 @@ fn ()
             dummies.buffer
 
     pipeline = _pipeline
+
 
 @@ 'on bottle.draw
 fn (render-pass)
