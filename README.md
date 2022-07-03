@@ -8,6 +8,6 @@ Run `./bootstrap.sh` to prepare all the dependencies. Then run each individual p
 For example, to run the triangle sample:
 
 ```
-scopes -e 01-triangle/main.sc
+scopes -e 01-hello-gpu/main.sc
 ```
 
