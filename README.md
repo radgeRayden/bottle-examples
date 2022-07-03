@@ -2,5 +2,12 @@
 Examples for the Bottle game framework
 
 ## How to run the examples:
-Clone bottle at the top level of the repository. Then you will be able to run each individual project
+Run `./bootstrap.sh` to prepare all the dependencies. Then run each individual project
 `main.sc` file using the [Scopes](http://scopes.rocks) compiler.
+
+For example, to run the triangle sample:
+
+```
+scopes -e 01-triangle/main.sc
+```
+
