@@ -54,7 +54,7 @@ vvv bind shader
                 @builtin(position) position: vec4<f32>,
             };
 
-            @stage(vertex)
+            @vertex
             fn vs_main(@builtin(vertex_index) vindex: u32) -> VertexOutput \{
                 var out: VertexOutput;
                 let attr = vertexData[vindex];
@@ -63,7 +63,7 @@ vvv bind shader
                 return out;
             }
 
-            @stage(fragment)
+            @fragment
             fn fs_main(vertex: VertexOutput) -> @location(0) vec4<f32> \{
                 return vertex.vcolor;
             }
