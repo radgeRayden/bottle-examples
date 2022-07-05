@@ -139,8 +139,8 @@ fn (render-pass)
     let pipeline = ('force-unwrap pipeline)
 
     'set-pipeline render-pass pipeline
-    'set-bindgroup render-pass 0:u32 (('force-unwrap bgroup0) . _handle)
-    'set-bindgroup render-pass 1:u32 (('force-unwrap bgroup1) . _handle)
+    'set-bindgroup render-pass 0:u32 ('force-unwrap bgroup0)
+    'set-bindgroup render-pass 1:u32 ('force-unwrap bgroup1)
     'set-index-buffer render-pass ('force-unwrap index-buffer)
 
     'draw render-pass 3:u32 1:u32 0:u32 0:u32
