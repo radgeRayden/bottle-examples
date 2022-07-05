@@ -68,18 +68,20 @@ vvv bind shader
                 return vertex.vcolor;
             }
 
-
         attr_stride = (sizeof VertexAttributes)
 
 @@ 'on bottle.configure
 fn (cfg)
     cfg.window.title = "flying quads"
 
+let Mesh = (GPUStorageBuffer VertexAttributes)
+dump Mesh
+
 global pipeline : (Option GPUPipeline)
 global bgroup0 : (Option GPUBindGroup)
 global bgroup1 : (Option GPUBindGroup)
 global vertices : (Array VertexAttributes)
-global vertex-buffer : (Option GPUBuffer)
+global vertex-buffer : (Option Mesh)
 
 @@ 'on bottle.load
 fn ()
@@ -94,19 +96,15 @@ fn ()
             error "you made a typo you dofus"
 
     vertices = (gen-vertices)
-    let bufsize =
-        *
-            sizeof ((typeof vertices) . ElementType)
-            countof vertices
-    let vbuffer = (GPUBuffer bufsize)
+    let vbuffer = (Mesh (countof vertices))
     'write (view vbuffer) vertices
 
     bgroup0 =
         GPUBindGroup layout
             GPUResourceBinding.Buffer
-                buffer = vbuffer.handle
+                buffer = vbuffer._handle
                 offset = 0
-                size = bufsize
+                size = vbuffer._size
             dummies.sampler
             dummies.texture-view
 
