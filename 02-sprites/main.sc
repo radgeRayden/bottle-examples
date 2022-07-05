@@ -21,12 +21,14 @@ fn gen-vertices ()
             vec4 0.0 1.0 0.0 1.0
             vec4 0.0 0.0 1.0 1.0
     local vertex-data : (Array VertexAttributes)
+    local index-data : (Array u16)
     for i in (range 3)
         'append vertex-data
             VertexAttributes
                 position = (vertices @ i)
                 color = (colors @ i)
-    vertex-data
+        'append index-data (i as u16)
+    _ vertex-data index-data
 
 import bottle
 import bottle.src.gpu.common
@@ -75,13 +77,14 @@ fn (cfg)
     cfg.window.title = "flying quads"
 
 let Mesh = (GPUStorageBuffer VertexAttributes)
-dump Mesh
 
 global pipeline : (Option GPUPipeline)
 global bgroup0 : (Option GPUBindGroup)
 global bgroup1 : (Option GPUBindGroup)
 global vertices : (Array VertexAttributes)
+global indices : (Array u16)
 global vertex-buffer : (Option Mesh)
+global index-buffer : (Option (GPUIndexBuffer u16))
 
 @@ 'on bottle.load
 fn ()
@@ -95,7 +98,11 @@ fn ()
         else
             error "you made a typo you dofus"
 
-    vertices = (gen-vertices)
+    do
+        let vdata idata = (gen-vertices)
+        vertices = vdata
+        indices = idata
+
     let vbuffer = (Mesh (countof vertices))
     'write (view vbuffer) vertices
 
@@ -109,6 +116,10 @@ fn ()
             dummies.texture-view
 
     vertex-buffer = vbuffer
+
+    let ibuffer = ((GPUIndexBuffer u16) 4)
+    'write (view ibuffer) indices
+    index-buffer = ibuffer
 
     let layout =
         try
@@ -130,6 +141,7 @@ fn (render-pass)
     'set-pipeline render-pass pipeline
     'set-bindgroup render-pass 0:u32 (('force-unwrap bgroup0) . _handle)
     'set-bindgroup render-pass 1:u32 (('force-unwrap bgroup1) . _handle)
+    'set-index-buffer render-pass ('force-unwrap index-buffer)
 
     'draw render-pass 3:u32 1:u32 0:u32 0:u32
 
