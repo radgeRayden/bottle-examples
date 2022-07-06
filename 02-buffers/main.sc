@@ -5,9 +5,14 @@ using import struct
 using import String
 using import Array
 
+import sdl
+
 struct VertexAttributes
     position : vec2
     color : vec4
+
+struct Uniforms
+    time : f32
 
 fn gen-vertices ()
     local vertices =
@@ -47,9 +52,17 @@ vvv bind shader
                 color: vec4<f32>,
             };
 
+            struct Uniforms \{
+                time: f32
+            };
+
             @group(0)
             @binding(0)
             var<storage, read> vertexData: array<VertexAttributes>;
+
+            @group(1)
+            @binding(0)
+            var<uniform> uniforms: Uniforms;
 
             struct VertexOutput \{
                 @location(0) vcolor: vec4<f32>,
@@ -61,7 +74,7 @@ vvv bind shader
                 var out: VertexOutput;
                 let attr = vertexData[vindex];
                 out.position = vec4<f32>(attr.position, 0.0, 1.0);
-                out.vcolor = attr.color;
+                out.vcolor = attr.color * vec4<f32>(1.0, 1.0, 1.0, (sin(uniforms.time) + 1.0) / 2.0);
                 return out;
             }
 
@@ -85,6 +98,7 @@ global vertices : (Array VertexAttributes)
 global indices : (Array u16)
 global vertex-buffer : (Option Mesh)
 global index-buffer : (Option (GPUIndexBuffer u16))
+global uniform-buffer : (Option (GPUUniformBuffer Uniforms))
 
 @@ 'on bottle.load
 fn ()
@@ -127,12 +141,24 @@ fn ()
         else
             error "you made a typo you dofus"
 
+    let ubuffer = ((GPUUniformBuffer Uniforms) 1) # hmmm
     bgroup1 =
         GPUBindGroup layout
-            dummies.buffer
+            GPUResourceBinding.UniformBuffer
+                buffer = ubuffer._handle
+                offset = 0
+                size = ubuffer._size
+    uniform-buffer = ubuffer
 
     pipeline = _pipeline
 
+
+@@ 'on bottle.update
+fn ()
+    time := (sdl.GetTicks) / 1000
+    local uniforms : (Array Uniforms)
+    'append uniforms (Uniforms time)
+    'write ('force-unwrap uniform-buffer) uniforms
 
 @@ 'on bottle.draw
 fn (render-pass)
