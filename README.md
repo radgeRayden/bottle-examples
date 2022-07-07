@@ -1,5 +1,5 @@
 # bottle-examples
-Examples for the Bottle game framework
+Examples for the [Bottle](https://github.com/radgeRayden/bottle/) game framework
 
 ## Building
 
