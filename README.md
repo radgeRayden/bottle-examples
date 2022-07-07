@@ -1,13 +1,22 @@
 # bottle-examples
 Examples for the Bottle game framework
 
-## How to run the examples:
-Run `./bootstrap.sh` to prepare all the dependencies. Then run each individual project
-`main.sc` file using the [Scopes](http://scopes.rocks) compiler.
+## Building
 
-For example, to run the triangle sample:
+The script `bootstrap.sh` takes care of downloading and building all direct dependencies. It does not however install build-time dependencies, since those will 
+differ from OS to OS, and I don't think people like when a script installs system packages.
 
-```
+Bottle (and these examples) currently support Windows (MinGW) and Linux. The build will not successfully complete without:
+- gcc
+- a rust toolchain
+
+This may not be a complete list, open an issue if it fails on your particular system.
+
+## Running
+
+After all the dependencies are taken care of, simply run each example's `main.sc` file with Scopes in project mode (`-e` flag), like so:
+
+``` sh
 scopes -e 01-hello-gpu/main.sc
 ```
 
