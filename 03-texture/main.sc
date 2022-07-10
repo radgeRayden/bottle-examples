@@ -96,7 +96,7 @@ fn ()
         else
             error "you made a typo you dofus"
 
-    let linus = (load-image "linus.jpg")
+    let linus = (load-image (.. module-dir "/linus.jpg"))
     draw-state =
         DrawState
             pipeline = (GPUPipeline "Basic" (GPUShaderModule shader 'wgsl))
