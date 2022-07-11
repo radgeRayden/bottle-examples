@@ -1,5 +1,4 @@
 using import glm
-using import format
 using import Option
 using import struct
 using import String
@@ -45,45 +44,41 @@ from (import bottle.src.gpu.bindgroup) let GPUBindGroup
 
 
 vvv bind shader
-..
-    format
-        """"struct VertexAttributes \{
-                position: vec2<f32>,
-                color: vec4<f32>,
-            };
+""""struct VertexAttributes {
+       position: vec2<f32>,
+       color: vec4<f32>,
+    };
 
-            struct Uniforms \{
-                time: f32
-            };
+    struct Uniforms {
+        time: f32
+    };
 
-            @group(0)
-            @binding(0)
-            var<storage, read> vertexData: array<VertexAttributes>;
+    @group(0)
+    @binding(0)
+    var<storage, read> vertexData: array<VertexAttributes>;
 
-            @group(1)
-            @binding(0)
-            var<uniform> uniforms: Uniforms;
+    @group(1)
+    @binding(0)
+    var<uniform> uniforms: Uniforms;
 
-            struct VertexOutput \{
-                @location(0) vcolor: vec4<f32>,
-                @builtin(position) position: vec4<f32>,
-            };
+    struct VertexOutput {
+        @location(0) vcolor: vec4<f32>,
+        @builtin(position) position: vec4<f32>,
+    };
 
-            @vertex
-            fn vs_main(@builtin(vertex_index) vindex: u32) -> VertexOutput \{
-                var out: VertexOutput;
-                let attr = vertexData[vindex];
-                out.position = vec4<f32>(attr.position, 0.0, 1.0);
-                out.vcolor = attr.color * vec4<f32>(1.0, 1.0, 1.0, (sin(uniforms.time) + 1.0) / 2.0);
-                return out;
-            }
+    @vertex
+    fn vs_main(@builtin(vertex_index) vindex: u32) -> VertexOutput {
+        var out: VertexOutput;
+        let attr = vertexData[vindex];
+        out.position = vec4<f32>(attr.position, 0.0, 1.0);
+        out.vcolor = attr.color * vec4<f32>(1.0, 1.0, 1.0, (sin(uniforms.time) + 1.0) / 2.0);
+        return out;
+    }
 
-            @fragment
-            fn fs_main(vertex: VertexOutput) -> @location(0) vec4<f32> \{
-                return vertex.vcolor;
-            }
-
-        attr_stride = (sizeof VertexAttributes)
+    @fragment
+    fn fs_main(vertex: VertexOutput) -> @location(0) vec4<f32> {
+        return vertex.vcolor;
+    }
 
 @@ 'on bottle.configure
 fn (cfg)
